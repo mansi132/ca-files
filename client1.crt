@@ -1,0 +1,85 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            5e:1b:8d:27:f0:56:1a:95:8f:ba:39:05:4c:8f:58:c5
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=monetadev-vpn-ca
+        Validity
+            Not Before: Jan  1 10:24:36 2025 GMT
+            Not After : Apr  6 10:24:36 2027 GMT
+        Subject: CN=client1
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:8e:82:55:4e:8b:1a:a9:a2:85:25:f4:99:07:f5:
+                    9b:31:6d:89:e5:a9:07:1f:82:02:9f:bc:cb:a1:87:
+                    e5:bc:7c:1e:9c:52:40:dc:f2:05:df:56:1a:e7:b3:
+                    e0:b4:b1:39:cb:6c:3e:14:32:d4:0c:84:98:bd:d4:
+                    c6:18:06:55:14:59:a1:c1:47:eb:76:b3:0a:62:60:
+                    7f:83:39:a6:14:e5:8f:66:9c:d2:dc:0d:63:4c:28:
+                    1d:7f:1c:24:3f:fe:fd:81:9e:4f:a7:83:43:64:d9:
+                    80:19:10:2d:b1:06:8a:db:21:1a:e5:d8:62:28:4f:
+                    b3:1e:73:10:14:f7:35:52:9a:35:b1:a9:9c:50:04:
+                    2d:de:3f:f8:4f:e4:5d:c6:a3:4c:43:0c:fa:36:b7:
+                    80:ca:3b:a7:a5:d6:77:30:20:fe:9e:13:7e:a2:cf:
+                    ac:f4:f2:ee:f2:6b:74:e1:36:09:2e:b1:61:1d:1d:
+                    50:46:83:45:22:14:ca:bd:04:77:c7:d2:4c:cb:05:
+                    a3:5a:e9:40:0f:be:4b:5d:22:29:31:70:49:39:de:
+                    cd:0e:b5:6e:b9:f8:80:fe:79:72:81:91:b3:2f:46:
+                    10:8f:f1:ed:f6:2f:f8:33:3f:c9:a6:b7:ef:1f:7a:
+                    f4:f8:a7:c5:05:ad:1b:5d:46:9d:70:ce:26:e8:30:
+                    4b:f1
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Subject Key Identifier: 
+                0D:9E:8F:86:4F:33:25:A6:04:36:AD:77:7C:5B:9D:F8:C2:5C:85:80
+            X509v3 Authority Key Identifier: 
+                keyid:64:F1:24:71:7A:58:32:04:D2:F5:85:8E:32:23:51:04:F1:25:59:FA
+                DirName:/CN=monetadev-vpn-ca
+                serial:72:39:A0:2C:2A:CD:33:B0:9A:BC:85:52:00:7E:67:82:24:0B:C4:37
+            X509v3 Extended Key Usage: 
+                TLS Web Client Authentication
+            X509v3 Key Usage: 
+                Digital Signature
+    Signature Algorithm: sha256WithRSAEncryption
+    Signature Value:
+        b6:dc:09:7f:35:d3:08:93:ca:8d:b4:fa:ac:ef:79:37:c9:03:
+        14:1b:9e:74:87:48:31:58:fe:f7:e5:f6:57:e7:36:60:4b:c8:
+        63:5a:3d:e7:75:43:05:b8:85:44:a5:1c:21:b6:86:b9:28:e6:
+        83:ae:6b:ae:e4:ae:42:66:97:67:ba:f2:a4:c9:73:1e:8d:51:
+        22:24:eb:9e:b5:17:e6:06:8f:6e:bd:51:11:df:03:fd:da:93:
+        6c:8c:ad:ba:bb:d6:a4:54:f4:d6:94:d2:a8:8f:36:8c:58:46:
+        02:b0:61:94:cd:d8:a1:08:a1:59:06:52:75:0d:50:70:cf:b3:
+        0c:73:29:6d:9a:f4:94:b0:e6:99:f7:5c:f4:02:18:11:42:e5:
+        07:79:d1:7a:3c:3f:9c:c2:12:ef:73:c0:fd:d8:56:09:c4:b9:
+        ef:8e:0b:04:dd:95:a9:b4:9a:7c:42:cd:0b:b1:6f:f7:3b:8d:
+        0a:06:cc:ae:52:63:73:42:8e:db:52:e9:75:92:4c:c8:97:69:
+        38:70:f2:da:e6:94:90:0e:0f:be:5a:51:aa:f7:e4:39:e5:b2:
+        10:19:61:a1:18:5c:44:cd:61:7f:76:0a:16:2c:65:57:80:ff:
+        c1:b4:c9:43:33:81:d5:4f:35:c1:e6:39:4e:5a:5a:9e:a9:38:
+        84:d0:89:da
+-----BEGIN CERTIFICATE-----
+MIIDXzCCAkegAwIBAgIQXhuNJ/BWGpWPujkFTI9YxTANBgkqhkiG9w0BAQsFADAb
+MRkwFwYDVQQDDBBtb25ldGFkZXYtdnBuLWNhMB4XDTI1MDEwMTEwMjQzNloXDTI3
+MDQwNjEwMjQzNlowEjEQMA4GA1UEAwwHY2xpZW50MTCCASIwDQYJKoZIhvcNAQEB
+BQADggEPADCCAQoCggEBAI6CVU6LGqmihSX0mQf1mzFtieWpBx+CAp+8y6GH5bx8
+HpxSQNzyBd9WGuez4LSxOctsPhQy1AyEmL3UxhgGVRRZocFH63azCmJgf4M5phTl
+j2ac0twNY0woHX8cJD/+/YGeT6eDQ2TZgBkQLbEGitshGuXYYihPsx5zEBT3NVKa
+NbGpnFAELd4/+E/kXcajTEMM+ja3gMo7p6XWdzAg/p4TfqLPrPTy7vJrdOE2CS6x
+YR0dUEaDRSIUyr0Ed8fSTMsFo1rpQA++S10iKTFwSTnezQ61brn4gP55coGRsy9G
+EI/x7fYv+DM/yaa37x969PinxQWtG11GnXDOJugwS/ECAwEAAaOBpzCBpDAJBgNV
+HRMEAjAAMB0GA1UdDgQWBBQNno+GTzMlpgQ2rXd8W534wlyFgDBWBgNVHSMETzBN
+gBRk8SRxelgyBNL1hY4yI1EE8SVZ+qEfpB0wGzEZMBcGA1UEAwwQbW9uZXRhZGV2
+LXZwbi1jYYIUcjmgLCrNM7CavIVSAH5ngiQLxDcwEwYDVR0lBAwwCgYIKwYBBQUH
+AwIwCwYDVR0PBAQDAgeAMA0GCSqGSIb3DQEBCwUAA4IBAQC23Al/NdMIk8qNtPqs
+73k3yQMUG550h0gxWP735fZX5zZgS8hjWj3ndUMFuIVEpRwhtoa5KOaDrmuu5K5C
+ZpdnuvKkyXMejVEiJOuetRfmBo9uvVER3wP92pNsjK26u9akVPTWlNKojzaMWEYC
+sGGUzdihCKFZBlJ1DVBwz7MMcyltmvSUsOaZ91z0AhgRQuUHedF6PD+cwhLvc8D9
+2FYJxLnvjgsE3ZWptJp8Qs0LsW/3O40KBsyuUmNzQo7bUul1kkzIl2k4cPLa5pSQ
+Dg++WlGq9+Q55bIQGWGhGFxEzWF/dgoWLGVXgP/BtMlDM4HVTzXB5jlOWlqeqTiE
+0Ina
+-----END CERTIFICATE-----
