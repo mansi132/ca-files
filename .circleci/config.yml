@@ -13,7 +13,6 @@ parameters:
       - dev
       - stage
       - prod
-    default: ""
   TAG_ID:
     description: "Tag for the Docker image. Shortened commit SHA."
     type: string
