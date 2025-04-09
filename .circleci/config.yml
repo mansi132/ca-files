@@ -1,4 +1,4 @@
-version: 2.1 
+version: 2.1
 
 executors:
   moneta-runner-executor:
@@ -113,36 +113,26 @@ jobs:
             bash .circleci/deploy.sh ${TAG_ID}
 
 workflows:
-  Moneta-PYTHON-SERVICE-PROD:
+  Moneta-PYTHON-SERVICE:
+    when:
+      not:
+        equal: ["", << pipeline.parameters.ENVIRONMENT >>]
     jobs:
       - Building_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           filters:
             branches:
-              ignore: /.*/
+              only: main
+
       - Hold_for_approval:
           type: approval
           requires:
             - Building_App
+
       - Deploying_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           requires:
             - Hold_for_approval
           filters:
             branches:
-              ignore: /.*/
-
-  Moneta-PYTHON-SERVICE-NON-PROD:
-    jobs:
-      - Building_App:
-          ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
-          filters:
-            branches:
-              ignore: /.*/
-      - Deploying_App:
-          ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
-          requires:
-            - Building_App
-          filters:
-            branches:
-              ignore: /.*/
+              only: main
