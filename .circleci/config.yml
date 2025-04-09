@@ -116,7 +116,8 @@ jobs:
             bash .circleci/deploy.sh ${TAG_ID}
 
 workflows:
-  prod-workflow:
+  Moneta-PYTHON-SERVICE-PROD:
+    when: << pipeline.parameters.manual_trigger >>
     when:
       equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
     jobs:
@@ -139,7 +140,8 @@ workflows:
             branches:
               only: main
 
-  non-prod-workflow:
+  Moneta-PYTHON-SERVICE-NON-PROD:
+    when: << pipeline.parameters.manual_trigger >>
     when:
       not:
         equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
