@@ -117,7 +117,7 @@ jobs:
 
 workflows:
   Moneta-PYTHON-SERVICE:
-   when: << pipeline.parameters.manual_trigger >>
+    when: << pipeline.parameters.manual_trigger >>
     jobs:
       - Building_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
