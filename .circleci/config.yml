@@ -1,22 +1,143 @@
 version: 2.1
 
+executors:
+  moneta-runner-executor:
+    machine: true
+    resource_class: moneta-labs/moneta-runner   
+
 parameters:
-  run_manually:
+  manual_trigger:
+    description: "Controls whether the pipeline requires manual triggering (true) or runs automatically (false)."
     type: boolean
     default: false
+  ENVIRONMENT:
+    description: "Specifies the deployment environment for the application, in lowercase. This variable determines whether the build and deployment process is executed in the development (dev), staging (stage), or production (prod) environment."
+    type: string
+    default: ""
+  TAG_ID:
+    description: "Tag for the Docker image. Shortened commit SHA."
+    type: string
+    default: ""
 
 jobs:
-  say-hello:
-    docker:
-      - image: cimg/base:current
+  Hold_for_approval:
+    type: approval  
+  Building_App:
+    machine: true
+    resource_class: moneta-labs/moneta-runner
+    parameters:
+      ENVIRONMENT:
+        type: string
     steps:
+      - run:
+          name: Extract and Print ENVIRONMENT value
+          command: |
+            ENVIRONMENT="<< parameters.ENVIRONMENT >>"
+            echo "Extracted ENVIRONMENT value: $ENVIRONMENT"
+            echo "export ENVIRONMENT=$ENVIRONMENT" >> $BASH_ENV
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: Authenticate with GCP
+          command: |
+            echo "$GCLOUD_SERVICE_KEY" > ./service-account.json
+            SERVICE_PROJECT_ID="${Name_Prefix}${ENVIRONMENT}"
+            echo 'export GOOGLE_APPLICATION_CREDENTIALS=./service-account.json' >> $BASH_ENV
+            gcloud auth activate-service-account --key-file=./service-account.json
+            gcloud --quiet config set project "${Name_Prefix}${ENVIRONMENT}"
+      - run:
+          name: Set Short Commit SHA
+          command: |
+            export TAG_ID=${CIRCLE_SHA1:0:8}
+            echo "export TAG_ID=${TAG_ID}" >> $BASH_ENV
+            echo "Generated TAG_ID: $TAG_ID"
+            echo $TAG_ID > /tmp/TAG_ID.txt
+      - run:
+          name: Building & Pushing Docker Image
+          command: |
+            if [[ -z "$TAG_ID" ]]; then
+              echo "Error: TAG_ID is not set!"
+              exit 1
+            fi
+            if [[ -f ".env" ]]; then
+              echo ".env file found. Deleting it..."
+              rm -rf .env
+            else
+              echo ".env file not found. Skipping deletion."
+            fi
+            gcloud secrets versions access latest --project="${Name_Prefix}${ENVIRONMENT}" --secret="${Name_Prefix}${ENVIRONMENT}-python-service" >> .env
+            rm -rf ./service-account.json
+            docker build --platform=linux/amd64 --pull -t "$GCP_REGION-docker.pkg.dev/${Name_Prefix}${ENVIRONMENT}/${Name_Prefix}-python-service/${Name_Prefix}-python-service:$TAG_ID" -f Dockerfile .
+            gcloud auth configure-docker "$GCP_REGION-docker.pkg.dev" --quiet > /dev/null 2>&1
+            docker push "$GCP_REGION-docker.pkg.dev/${Name_Prefix}${ENVIRONMENT}/${Name_Prefix}-python-service/${Name_Prefix}-python-service:$TAG_ID"
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - TAG_ID.txt
+
+  Deploying_App:
+    machine: true
+    resource_class: moneta-labs/moneta-runner
+    parameters:
+      ENVIRONMENT:
+        type: string
+    steps:
+      - run:
+          name: Extract and Print ENVIRONMENT value
+          command: |
+            ENVIRONMENT="<< parameters.ENVIRONMENT >>"
+            echo "Extracted ENVIRONMENT value: $ENVIRONMENT"
+            echo "export ENVIRONMENT=$ENVIRONMENT" >> $BASH_ENV
+      - attach_workspace:
+          at: /tmp
+      - checkout
+      - run:
+          name: Authenticate with GCP
+          command: |
+            echo "$GCLOUD_SERVICE_KEY" > ./service-account.json
+            SERVICE_PROJECT_ID="${Name_Prefix}${ENVIRONMENT}"
+            echo 'export GOOGLE_APPLICATION_CREDENTIALS=./service-account.json' >> $BASH_ENV
+            gcloud auth activate-service-account --key-file=./service-account.json
+            gcloud --quiet config set project "${Name_Prefix}${ENVIRONMENT}"
+      - run:
+          name: Fetch TAG_ID
+          command: |
+            TAG_ID=$(cat /tmp/TAG_ID.txt)
+            export TAG_ID=${TAG_ID}
+            echo "export TAG_ID=${TAG_ID}" >> $BASH_ENV
+      - run:
+          name: Deploying the Application
+          command: |
+            ENVIRONMENT="<< parameters.ENVIRONMENT >>"
+            echo "Extracted ENVIRONMENT value: $ENVIRONMENT"
+            echo "export ENVIRONMENT=$ENVIRONMENT" >> $BASH_ENV
+            export Name_Prefix=$Name_Prefix
+            export ENVIRONMENT=$ENVIRONMENT
+            echo "Deploying application with ENVIRONMENT: $ENVIRONMENT"
+            bash .circleci/deploy.sh ${TAG_ID}
 
 workflows:
-  say-hello-workflow:
-    when: << pipeline.parameters.run_manually >>
+  Moneta-PYTHON-SERVICE:
+   when: << pipeline.parameters.manual_trigger >>
     jobs:
-      - say-hello
+      - Building_App:
+          ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
+          filters:
+            branches:
+              only: main
+      - Hold_for_approval:
+          type: approval
+          requires:
+            - Building_App
+          filters:
+            branches:
+              only: main
+          when:
+            condition:
+              equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
+      - Deploying_App:
+          requires:
+            - Hold_for_approval
+          ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
+          filters:
+            branches:
+              only: main
