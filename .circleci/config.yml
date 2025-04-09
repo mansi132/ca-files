@@ -8,7 +8,11 @@ executors:
 parameters:
   ENVIRONMENT:
     description: "Specifies the deployment environment for the application, in lowercase. This variable determines whether the build and deployment process is executed in the development (dev), staging (stage), or production (prod) environment."
-    type: string
+    type: enum
+    enum:
+      - dev
+      - stage
+      - prod
     default: ""
   TAG_ID:
     description: "Tag for the Docker image. Shortened commit SHA."
