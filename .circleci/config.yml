@@ -148,7 +148,7 @@ workflows:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           filters:
             branches:
-              only: main
+              only: main 
       - Deploying_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           requires:
