@@ -97,6 +97,7 @@ jobs:
 
 workflows:
   Moneta-PYTHON-SERVICE:
+    when: << pipeline.parameters.run_manually >>
     jobs:
       - Building_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
@@ -120,3 +121,4 @@ workflows:
           filters:
             branches:
               only: main
+
