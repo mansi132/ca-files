@@ -10,6 +10,7 @@ parameters:
     description: "Specifies the deployment environment for the application, in lowercase. This variable determines whether the build and deployment process is executed in the development (dev), staging (stage), or production (prod) environment."
     type: enum
     enum:
+      - manual
       - dev
       - stage
       - prod
@@ -120,7 +121,7 @@ workflows:
     when:
       and:
         - not:
-            equal: ["", << pipeline.parameters.ENVIRONMENT >>]
+            equal: ["manual", << pipeline.parameters.ENVIRONMENT >>]
         - equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
     jobs:
       - Building_App:
@@ -143,7 +144,7 @@ workflows:
     when:
       and:
         - not:
-            equal: ["", << pipeline.parameters.ENVIRONMENT >>]
+            equal: ["manual", << pipeline.parameters.ENVIRONMENT >>]
         - not:
             equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
     jobs:
