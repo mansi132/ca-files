@@ -140,4 +140,4 @@ workflows:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           filters:
             branches:
-              only: main
+              only: main 
