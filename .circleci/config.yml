@@ -6,7 +6,7 @@ executors:
     resource_class: moneta-labs/moneta-runner   
 
 parameters:
-  manual_trigger:
+  run_manually:
     description: "Controls whether the pipeline requires manual triggering (true) or runs automatically (false)."
     type: boolean
     default: false
@@ -117,7 +117,7 @@ jobs:
 
 workflows:
   Moneta-PYTHON-SERVICE:
-    when: << pipeline.parameters.manual_trigger >>
+    when: << pipeline.parameters.run_manually >>
     jobs:
       - Building_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
