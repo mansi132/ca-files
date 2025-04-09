@@ -6,10 +6,6 @@ executors:
     resource_class: moneta-labs/moneta-runner   
 
 parameters:
-  manual_trigger:
-    description: "Controls whether the pipeline requires manual triggering (true) or runs automatically (false)."
-    type: boolean
-    default: false
   ENVIRONMENT:
     description: "Specifies the deployment environment for the application, in lowercase. This variable determines whether the build and deployment process is executed in the development (dev), staging (stage), or production (prod) environment."
     type: string
@@ -118,47 +114,35 @@ jobs:
 
 workflows:
   Moneta-PYTHON-SERVICE-PROD:
-    when:
-      and:
-        - << pipeline.parameters.manual_trigger >>
-        - equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
     jobs:
       - Building_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           filters:
             branches:
-              only: main
-
+              ignore: /.*/
       - Hold_for_approval:
           type: approval
           requires:
             - Building_App
-
       - Deploying_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           requires:
             - Hold_for_approval
           filters:
             branches:
-              only: main
+              ignore: /.*/
 
   Moneta-PYTHON-SERVICE-NON-PROD:
-    when:
-      and:
-        - << pipeline.parameters.manual_trigger >>
-        - not:
-            equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
     jobs:
       - Building_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           filters:
             branches:
-              only: main
-
+              ignore: /.*/
       - Deploying_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           requires:
             - Building_App
           filters:
             branches:
-              only: main 
+              ignore: /.*/
