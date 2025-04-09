@@ -3,7 +3,7 @@ version: 2.1
 executors:
   moneta-runner-executor:
     machine: true
-    resource_class: moneta-labs/moneta-runner   
+    resource_class: moneta-labs/moneta-runner
 
 parameters:
   run_manually:
@@ -11,7 +11,7 @@ parameters:
     type: boolean
     default: false
   ENVIRONMENT:
-    description: "Specifies the deployment environment for the application, in lowercase. This variable determines whether the build and deployment process is executed in the development (dev), staging (stage), or production (prod) environment."
+    description: "Specifies the deployment environment (dev, stage, prod)."
     type: string
     default: ""
   TAG_ID:
@@ -22,6 +22,7 @@ parameters:
 jobs:
   Hold_for_approval:
     type: approval  
+
   Building_App:
     machine: true
     resource_class: moneta-labs/moneta-runner
@@ -108,32 +109,36 @@ jobs:
           name: Deploying the Application
           command: |
             ENVIRONMENT="<< parameters.ENVIRONMENT >>"
-            echo "Extracted ENVIRONMENT value: $ENVIRONMENT"
-            echo "export ENVIRONMENT=$ENVIRONMENT" >> $BASH_ENV
-            export Name_Prefix=$Name_Prefix
-            export ENVIRONMENT=$ENVIRONMENT
             echo "Deploying application with ENVIRONMENT: $ENVIRONMENT"
             bash .circleci/deploy.sh ${TAG_ID}
 
+# Anchors for job-level conditional logic
+anchors:
+  run_manually_check: &run_manually_check
+    when:
+      condition:
+        equal: [true, << pipeline.parameters.run_manually >>]
+
+  run_if_prod: &run_if_prod
+    when:
+      condition:
+        equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
+
 workflows:
   Moneta-PYTHON-SERVICE:
-    when: << pipeline.parameters.run_manually >>
     jobs:
       - Building_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           filters:
             branches:
               only: main
+          <<: *run_manually_check
+
       - Hold_for_approval:
-          type: approval
           requires:
             - Building_App
-          filters:
-            branches:
-              only: main
-          when:
-            condition:
-              equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
+          <<: *run_if_prod
+
       - Deploying_App:
           requires:
             - Hold_for_approval
@@ -141,3 +146,4 @@ workflows:
           filters:
             branches:
               only: main
+          <<: *run_manually_check
