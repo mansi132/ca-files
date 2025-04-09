@@ -116,28 +116,44 @@ jobs:
             bash .circleci/deploy.sh ${TAG_ID}
 
 workflows:
-  Moneta-PYTHON-SERVICE:
-    when: << pipeline.parameters.manual_trigger >>
+  prod-workflow:
+    when:
+      equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
     jobs:
       - Building_App:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           filters:
             branches:
               only: main
+
       - Hold_for_approval:
           type: approval
+          requires:
+            - Building_App
+
+      - Deploying_App:
+          ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
+          requires:
+            - Hold_for_approval
+          filters:
+            branches:
+              only: main
+
+  non-prod-workflow:
+    when:
+      not:
+        equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
+    jobs:
+      - Building_App:
+          ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
+          filters:
+            branches:
+              only: main
+
+      - Deploying_App:
+          ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           requires:
             - Building_App
           filters:
             branches:
               only: main
-          when:
-            condition:
-              equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
-      - Deploying_App:
-          requires:
-            - Hold_for_approval
-          ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
-          filters:
-            branches:
-              only: main 
