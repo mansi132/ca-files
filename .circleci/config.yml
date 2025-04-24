@@ -7,12 +7,10 @@ executors:
 
 parameters:
   ENVIRONMENT:
-    description: "Specifies the deployment environment for the application, in lowercase. This variable determines whether the build and deployment process is executed in the development (dev), staging (stage), or production (prod) environment."
+    description: "Specifies the deployment environment for the application, in lowercase."
     type: enum
     enum:
       - manual
-      - dev
-      - stage
       - prod
     default: "manual"
   TAG_ID:
@@ -66,11 +64,11 @@ jobs:
             else
               echo ".env file not found. Skipping deletion."
             fi
-            gcloud secrets versions access latest --project="${Name_Prefix}${ENVIRONMENT}" --secret="${Name_Prefix}${ENVIRONMENT}-python-service" >> .env
+            gcloud secrets versions access latest --project="${Name_Prefix}${ENVIRONMENT}" --secret="${Name_Prefix}${ENVIRONMENT}-dashboard-service" >> .env
             rm -rf ./service-account.json
-            docker build --platform=linux/amd64 --pull -t "$GCP_REGION-docker.pkg.dev/${Name_Prefix}${ENVIRONMENT}/${Name_Prefix}-python-service/${Name_Prefix}-python-service:$TAG_ID" -f Dockerfile .
+            docker build --platform=linux/amd64 --pull -t "$GCP_REGION-docker.pkg.dev/${Name_Prefix}${ENVIRONMENT}/${Name_Prefix}-dashboard-service/${Name_Prefix}-dashboard-service:$TAG_ID" -f Dockerfile .
             gcloud auth configure-docker "$GCP_REGION-docker.pkg.dev" --quiet > /dev/null 2>&1
-            docker push "$GCP_REGION-docker.pkg.dev/${Name_Prefix}${ENVIRONMENT}/${Name_Prefix}-python-service/${Name_Prefix}-python-service:$TAG_ID"
+            docker push "$GCP_REGION-docker.pkg.dev/${Name_Prefix}${ENVIRONMENT}/${Name_Prefix}-dashboard-service/${Name_Prefix}-dashboard-service:$TAG_ID"
       - persist_to_workspace:
           root: /tmp
           paths:
@@ -118,7 +116,7 @@ jobs:
             bash .circleci/deploy.sh ${TAG_ID}
 
 workflows:
-  Moneta-PYTHON-SERVICE-PROD:
+  Moneta-DASHBOARD-SERVICE-PROD:
     when:
       and:
         - not:
@@ -137,27 +135,6 @@ workflows:
           ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
           requires:
             - Hold_for_approval
-          filters:
-            branches:
-              only: main
-
-  Moneta-PYTHON-SERVICE-NON-PROD:
-    when:
-      and:
-        - not:
-            equal: ["manual", << pipeline.parameters.ENVIRONMENT >>]
-        - not:
-            equal: ["prod", << pipeline.parameters.ENVIRONMENT >>]
-    jobs:
-      - Building_App:
-          ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
-          filters:
-            branches:
-              only: main 
-      - Deploying_App:
-          ENVIRONMENT: << pipeline.parameters.ENVIRONMENT >>
-          requires:
-            - Building_App
           filters:
             branches:
               only: main
